@@ -16,6 +16,7 @@ export const contentStatusEnum = pgEnum("content_status", ["draft", "review", "a
 // Sales Pipeline Enums
 export const leadStageEnum = pgEnum("lead_stage", ["new_lead", "contact_made", "meeting_scheduled", "proposal_sent", "negotiation", "won", "lost"]);
 export const leadSourceEnum = pgEnum("lead_source", ["website", "referral", "social_media", "email_marketing", "cold_outreach", "advertising", "networking", "other"]);
+export const industryEnum = pgEnum("industry", ["ecommerce", "saas", "healthcare", "finance", "education", "real_estate", "manufacturing", "consulting", "agency", "other"]);
 
 // Users table
 export const users = pgTable("users", {
@@ -189,6 +190,7 @@ export const salesLeads = pgTable("sales_leads", {
   position: text("position"),
   stage: leadStageEnum("stage").notNull().default("new_lead"),
   source: leadSourceEnum("source").notNull().default("other"),
+  industry: industryEnum("industry").notNull().default("other"),
   dealValue: decimal("deal_value", { precision: 10, scale: 2 }),
   estimatedCloseDate: timestamp("estimated_close_date"),
   actualCloseDate: timestamp("actual_close_date"),
@@ -198,6 +200,16 @@ export const salesLeads = pgTable("sales_leads", {
   lastContactDate: timestamp("last_contact_date"),
   nextFollowUpDate: timestamp("next_follow_up_date"),
   lostReason: text("lost_reason"), // only if stage is 'lost'
+  // Industry-specific fields (JSON)
+  industryFields: text("industry_fields"), // JSON string for dynamic fields
+  // Stagnation tracking
+  stageChangedAt: timestamp("stage_changed_at").defaultNow().notNull(),
+  isStagnant: boolean("is_stagnant").default(false),
+  stagnantSince: timestamp("stagnant_since"),
+  // Google Calendar integration
+  calendarEventId: text("calendar_event_id"),
+  meetingLink: text("meeting_link"),
+  meetingDate: timestamp("meeting_date"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
