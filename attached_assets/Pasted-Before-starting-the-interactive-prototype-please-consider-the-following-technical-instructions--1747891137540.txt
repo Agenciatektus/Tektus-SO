@@ -1,0 +1,47 @@
+Before starting the interactive prototype, please consider the following technical instructions:
+
+1. Split the project into clear modular folders:
+   - `/frontend`: React/Next.js app using TailwindCSS with reusable components (Buttons, Cards, Charts, Modal, etc.)
+   - `/backend`: Node.js + Express server using TypeScript and Prisma ORM
+   - `/automations`: Placeholder folder for n8n webhook endpoints
+   - `/shared`: For shared constants, types and interfaces
+
+2. Use Prisma ORM for PostgreSQL schema management and migrations.
+   - Include seed scripts with demo data for Clients, Users and Tasks.
+   - Enable Prisma Studio for visual schema management.
+
+3. Enable Replit PostgreSQL for initial DB testing, but keep the schema compatible with Supabase or external Postgres for production.
+
+4. Implement a full **role-based access control (RBAC)** system:
+   - Roles: Admin, Ops, Sales, Finance, Content, Traffic, Client
+   - Protect frontend routes and backend endpoints accordingly
+   - Use middleware in backend for JWT-based permissions
+
+5. Include example API calls and comments for:
+   - Client CRUD
+   - Task assignments
+   - Finance entry creation
+   - Auth login / logout
+
+6. Use Chart.js or Recharts for data visualizations (funnel, bar, line charts)
+   - Show dummy charts for CRM, Financial KPIs, Churn Rate
+
+7. Add .env variables for all services:
+   - `DATABASE_URL`
+   - `JWT_SECRET`
+   - `N8N_WEBHOOK_URL`
+   - `GOOGLE_CALENDAR_API_KEY`
+   - `STRIPE_SECRET_KEY`
+
+8. Set up routes for planned integrations:
+   - `/api/webhooks/n8n`
+   - `/api/stripe/payment-success`
+   - `/api/analytics/google`
+
+9. Add a dark theme toggle (light/dark mode) and use Notion-inspired layout: sidebar navigation, minimalistic dashboard panels
+
+10. Prepare project for future deployment:
+   - Include Dockerfile and instructions in README
+   - Setup `vercel.json` for frontend deployment if applicable
+
+Let me know once the system is scaffolded so I can begin refining each module individually.
