@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { 
   Grid, 
   LayoutDashboard, 
@@ -14,42 +16,231 @@ import {
   Zap, 
   Settings, 
   Shield,
-  LogOut
+  LogOut,
+  ChevronDown,
+  ChevronRight,
+  Building2,
+  Calendar,
+  Target,
+  TrendingUp,
+  Scale,
+  Megaphone,
+  Globe,
+  UserCheck
 } from "lucide-react";
 
 const navigationItems = [
   {
-    title: "Core Modules",
+    title: "Dashboard",
+    icon: LayoutDashboard,
+    href: "/",
+    items: []
+  },
+  {
+    title: "Administration",
+    icon: Settings,
     items: [
-      { name: "Dashboard", href: "/", icon: LayoutDashboard },
-      { name: "CRM", href: "/crm", icon: Users },
-      { name: "Onboarding", href: "/onboarding", icon: UserPlus },
-      { name: "Offboarding", href: "/offboarding", icon: UserMinus },
-      { name: "Finance", href: "/finance", icon: DollarSign },
-      { name: "Tasks", href: "/tasks", icon: CheckSquare },
-      { name: "Content Center", href: "/content", icon: Edit3 },
-      { name: "Automation", href: "/automation", icon: Zap },
+      { name: "Services & Pricing", href: "/admin/services" },
+      { name: "Documents Repository", href: "/admin/documents" },
+      { name: "Organizational Chart", href: "/admin/org-chart" },
+      { name: "Partner List", href: "/admin/partners" },
+      { name: "Culture Code", href: "/admin/culture" },
+      { name: "Brand Identity", href: "/admin/brand" },
+      { name: "Links & Tools", href: "/admin/tools" },
+    ],
+    roles: ['admin']
+  },
+  {
+    title: "Clients Center",
+    icon: Users,
+    items: [
+      { name: "Meeting Calendar", href: "/clients/calendar" },
+      { name: "Client Control", href: "/clients/control" },
+      { name: "Client Dashboards", href: "/clients/dashboards" },
+      { name: "NPS Tracker", href: "/clients/nps" },
+      { name: "Onboarding Pipelines", href: "/clients/onboarding" },
+      { name: "Crisis Management", href: "/clients/crisis" },
+      { name: "Offboarding & Churn", href: "/clients/offboarding" },
+    ],
+    roles: ['admin', 'operations', 'sales']
+  },
+  {
+    title: "Content Center",
+    icon: Edit3,
+    items: [
+      { name: "Content Guidelines", href: "/content/guidelines" },
+      { name: "Account Setup Guides", href: "/content/setup-guides" },
+      { name: "Seasonal Dates", href: "/content/seasonal" },
+      { name: "Editorial Pipeline", href: "/content/editorial" },
+      { name: "Content Production", href: "/content/production" },
+      { name: "Publication Calendar", href: "/content/calendar" },
+    ],
+    roles: ['admin', 'operations', 'content']
+  },
+  {
+    title: "Tasks Center",
+    icon: CheckSquare,
+    items: [
+      { name: "All Tasks View", href: "/tasks/all" },
+      { name: "Kanban by Priority", href: "/tasks/priority" },
+      { name: "Kanban by Phase", href: "/tasks/phase" },
+      { name: "Table by Assignee", href: "/tasks/assignee" },
     ]
   },
   {
-    title: "Administration", 
+    title: "Traffic Center",
+    icon: TrendingUp,
     items: [
-      { name: "Settings", href: "/settings", icon: Settings },
-      { name: "User Management", href: "/users", icon: Shield, adminOnly: true },
-    ]
+      { name: "Traffic Team", href: "/traffic/team" },
+      { name: "Task View", href: "/traffic/tasks" },
+      { name: "Meta Ads", href: "/traffic/meta-ads" },
+      { name: "Google Ads", href: "/traffic/google-ads" },
+      { name: "Campaign Standards", href: "/traffic/standards" },
+      { name: "Investment Strategy", href: "/traffic/strategy" },
+    ],
+    roles: ['admin', 'operations', 'traffic']
+  },
+  {
+    title: "Sales Team",
+    icon: Target,
+    items: [
+      { name: "CRM Pipeline", href: "/sales/crm" },
+      { name: "Sales Team View", href: "/sales/team" },
+      { name: "Meeting Calendar", href: "/sales/calendar" },
+      { name: "Sales Scripts", href: "/sales/scripts" },
+      { name: "Client Profile DB", href: "/sales/profiles" },
+      { name: "Goals & Funnel", href: "/sales/goals" },
+      { name: "Intake Form", href: "/sales/intake" },
+      { name: "Objection Handling", href: "/sales/objections" },
+      { name: "Proposal Templates", href: "/sales/proposals" },
+      { name: "Service Catalog", href: "/sales/catalog" },
+      { name: "Sales Manual", href: "/sales/manual" },
+    ],
+    roles: ['admin', 'sales']
+  },
+  {
+    title: "Website Creation",
+    icon: Globe,
+    items: [
+      { name: "Active Projects", href: "/websites/active" },
+      { name: "Completed Projects", href: "/websites/completed" },
+      { name: "Plugin Database", href: "/websites/plugins" },
+      { name: "Web References", href: "/websites/references" },
+      { name: "Site Onboarding", href: "/websites/site-onboarding" },
+      { name: "E-commerce Onboarding", href: "/websites/ecommerce-onboarding" },
+    ],
+    roles: ['admin', 'operations']
+  },
+  {
+    title: "Legal",
+    icon: Scale,
+    items: [
+      { name: "Legal Cases", href: "/legal/cases" },
+      { name: "Contract Registry", href: "/legal/contracts" },
+      { name: "Contract Templates", href: "/legal/templates" },
+      { name: "Terms & Conditions", href: "/legal/terms" },
+      { name: "Privacy Policy", href: "/legal/privacy" },
+      { name: "Legal Notes", href: "/legal/notes" },
+    ],
+    roles: ['admin', 'finance']
+  },
+  {
+    title: "Agency Marketing",
+    icon: Megaphone,
+    items: [
+      { name: "Internal Campaigns", href: "/marketing/campaigns" },
+      { name: "Email Sequences", href: "/marketing/email" },
+      { name: "Lead Magnets", href: "/marketing/magnets" },
+      { name: "Success Cases", href: "/marketing/cases" },
+      { name: "Content Management", href: "/marketing/content" },
+    ],
+    roles: ['admin', 'operations']
+  },
+  {
+    title: "OKRs",
+    icon: Target,
+    items: [
+      { name: "Pro-Labore Summary", href: "/okrs/prolabore" },
+      { name: "3-Month Growth Plan", href: "/okrs/growth" },
+      { name: "OKR Tracker", href: "/okrs/tracker" },
+    ],
+    roles: ['admin']
+  },
+  {
+    title: "HR",
+    icon: UserCheck,
+    items: [
+      { name: "Strategic Onboarding", href: "/hr/strategic-onboarding" },
+      { name: "Bureaucratic Onboarding", href: "/hr/bureaucratic-onboarding" },
+      { name: "Team Offboarding", href: "/hr/offboarding" },
+      { name: "Team List", href: "/hr/team" },
+      { name: "Talent Pool", href: "/hr/talent" },
+      { name: "Job Openings", href: "/hr/jobs" },
+      { name: "Salary Ladder", href: "/hr/salary" },
+      { name: "Responsibility Matrix", href: "/hr/responsibilities" },
+      { name: "Rules & Agreements", href: "/hr/rules" },
+    ],
+    roles: ['admin', 'hr']
+  },
+  {
+    title: "Finance",
+    icon: DollarSign,
+    items: [
+      { name: "Monthly Summary", href: "/finance/summary" },
+      { name: "Outstanding Invoices", href: "/finance/invoices" },
+      { name: "Expense Breakdown", href: "/finance/expenses" },
+      { name: "Revenue Composition", href: "/finance/revenue" },
+      { name: "Account Balances", href: "/finance/accounts" },
+      { name: "Debt Overview", href: "/finance/debt" },
+      { name: "Accounting View", href: "/finance/accounting" },
+      { name: "Client Billing", href: "/finance/billing" },
+      { name: "Payroll", href: "/finance/payroll" },
+      { name: "Payment Calendar", href: "/finance/calendar" },
+      { name: "Manual Entries", href: "/finance/manual" },
+    ],
+    roles: ['admin', 'finance']
   }
 ];
 
 export function Sidebar() {
   const [location] = useLocation();
   const { user, logoutMutation } = useAuth();
+  const [openSections, setOpenSections] = useState<string[]>(['Dashboard']);
 
   const handleLogout = () => {
     logoutMutation.mutate();
   };
 
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+  const getInitials = (name: string) => {
+    if (!name) return "U";
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
+  const toggleSection = (sectionTitle: string) => {
+    setOpenSections(prev => 
+      prev.includes(sectionTitle) 
+        ? prev.filter(s => s !== sectionTitle)
+        : [...prev, sectionTitle]
+    );
+  };
+
+  const hasAccess = (item: any) => {
+    if (!item.roles) return true;
+    if (!user?.role) return false;
+    return item.roles.includes(user.role);
+  };
+
+  const isActiveSection = (item: any) => {
+    if (item.href) {
+      return item.href === "/" ? location === "/" : location.startsWith(item.href);
+    }
+    return item.items?.some((subItem: any) => 
+      subItem.href === "/" ? location === "/" : location.startsWith(subItem.href)
+    );
+  };
+
+  const isActiveSubItem = (href: string) => {
+    return href === "/" ? location === "/" : location.startsWith(href) && href !== "/";
   };
 
   return (
@@ -62,46 +253,83 @@ export function Sidebar() {
           </div>
           <div>
             <h1 className="font-space font-bold text-lg text-foreground">Tektus</h1>
-            <p className="text-xs text-muted-foreground">Marketing OS</p>
+            <p className="text-xs text-muted-foreground">Work OS</p>
           </div>
         </div>
       </div>
 
       {/* Navigation Menu */}
-      <nav className="flex-1 p-4 space-y-6 overflow-y-auto">
-        {navigationItems.map((section) => (
-          <div key={section.title} className="space-y-2">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-3">
-              {section.title}
-            </h3>
-            <div className="space-y-1">
-              {section.items
-                .filter(item => !item.adminOnly || user?.role === 'admin')
-                .map((item) => {
-                  const Icon = item.icon;
-                  const isActive = item.href === "/" 
-                    ? location === "/" 
-                    : location.startsWith(item.href) && item.href !== "/";
-                  
-                  return (
-                    <Link key={item.name} href={item.href}>
-                      <Button
-                        variant="ghost"
-                        className={`w-full justify-start space-x-3 ${
-                          isActive 
-                            ? "bg-primary/10 text-primary border border-primary/20" 
-                            : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-                        }`}
-                      >
-                        <Icon className="w-5 h-5" />
-                        <span className="font-medium">{item.name}</span>
-                      </Button>
-                    </Link>
-                  );
-                })}
-            </div>
-          </div>
-        ))}
+      <nav className="flex-1 p-3 overflow-y-auto">
+        <div className="space-y-1">
+          {navigationItems
+            .filter(hasAccess)
+            .map((item) => {
+              const Icon = item.icon;
+              const isOpen = openSections.includes(item.title);
+              const isActive = isActiveSection(item);
+              
+              if (item.items.length === 0) {
+                // Direct link item (like Dashboard)
+                return (
+                  <Link key={item.title} href={item.href}>
+                    <Button
+                      variant="ghost"
+                      className={`w-full justify-start space-x-3 h-9 ${
+                        isActive 
+                          ? "bg-primary/10 text-primary border border-primary/20" 
+                          : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span className="font-medium text-sm">{item.title}</span>
+                    </Button>
+                  </Link>
+                );
+              }
+
+              return (
+                <Collapsible key={item.title} open={isOpen} onOpenChange={() => toggleSection(item.title)}>
+                  <CollapsibleTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className={`w-full justify-between h-9 ${
+                        isActive 
+                          ? "bg-primary/10 text-primary border border-primary/20" 
+                          : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <Icon className="w-4 h-4" />
+                        <span className="font-medium text-sm">{item.title}</span>
+                      </div>
+                      {isOpen ? (
+                        <ChevronDown className="w-3 h-3" />
+                      ) : (
+                        <ChevronRight className="w-3 h-3" />
+                      )}
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="pl-6 pt-1 space-y-1">
+                    {item.items.map((subItem: any) => (
+                      <Link key={subItem.name} href={subItem.href}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={`w-full justify-start text-xs h-8 ${
+                            isActiveSubItem(subItem.href)
+                              ? "bg-primary/5 text-primary" 
+                              : "text-muted-foreground hover:text-foreground hover:bg-accent/30"
+                          }`}
+                        >
+                          {subItem.name}
+                        </Button>
+                      </Link>
+                    ))}
+                  </CollapsibleContent>
+                </Collapsible>
+              );
+            })}
+        </div>
       </nav>
 
       {/* User Profile Section */}
@@ -109,12 +337,12 @@ export function Sidebar() {
         <div className="flex items-center space-x-3">
           <Avatar className="w-10 h-10">
             <AvatarFallback className="bg-primary/10 text-primary">
-              {user ? getInitials(user.firstName, user.lastName) : "U"}
+              {user ? getInitials(user.username) : "U"}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-foreground truncate">
-              {user ? `${user.firstName} ${user.lastName}` : "Unknown User"}
+              {user?.username || "Unknown User"}
             </p>
             <p className="text-xs text-muted-foreground truncate capitalize">
               {user?.role || "User"}
