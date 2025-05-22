@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Mail, Phone, Building, Heart, AlertTriangle, AlertCircle } from "lucide-react";
+import { Plus, Mail, Phone, Building, Heart, AlertTriangle, AlertCircle, Users } from "lucide-react";
 import { insertClientSchema, type Client, type InsertClient } from "@shared/schema";
 import { z } from "zod";
 
@@ -210,7 +210,7 @@ export default function CRM() {
                         id="monthlyValue"
                         type="number"
                         step="0.01"
-                        value={newClient.monthlyValue}
+                        value={newClient.monthlyValue || ""}
                         onChange={(e) => setNewClient({ ...newClient, monthlyValue: e.target.value })}
                         placeholder="5000.00"
                       />

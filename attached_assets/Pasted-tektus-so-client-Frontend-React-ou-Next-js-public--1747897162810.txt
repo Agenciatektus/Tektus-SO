@@ -1,0 +1,61 @@
+tektus-so/
+│
+├── client/                          # Frontend (React ou Next.js)
+│   ├── public/                      # Assets estáticos (ícones, logos, fontes)
+│   ├── src/
+│   │   ├── assets/                  # Imagens, ícones, fontes, cores
+│   │   ├── components/             # Componentes reutilizáveis globais
+│   │   ├── layouts/                # Layouts por tipo de módulo (com sidebar)
+│   │   ├── pages/                  # Rotas/Views (Next.js ou React Router)
+│   │   │   ├── index.tsx           # Dashboard
+│   │   │   ├── login.tsx           # Tela de login
+│   │   │   ├── admin/              # Administração
+│   │   │   ├── clients/            # Central de Clientes
+│   │   │   ├── content/            # Central de Conteúdo
+│   │   │   ├── tasks/              # Central de Tarefas
+│   │   │   ├── traffic/            # Central de Tráfego
+│   │   │   ├── sales/              # Setor Comercial
+│   │   │   ├── websites/           # Criação de Sites
+│   │   │   ├── legal/              # Setor Jurídico
+│   │   │   ├── marketing/          # Marketing da Agência
+│   │   │   ├── okrs/               # OKRs
+│   │   │   ├── hr/                 # Recursos Humanos
+│   │   │   ├── finance/            # Financeiro
+│   │   │   └── settings/           # Configurações
+│   │   ├── context/                # Contexto global (usuário, tema, permissões)
+│   │   ├── hooks/                  # Custom Hooks (ex: useAuth, useClient)
+│   │   ├── lib/                    # Bibliotecas auxiliares (api, helpers)
+│   │   ├── middleware/             # Proteções de rota, RBAC
+│   │   ├── services/               # Requisições à API (ex: `authService`)
+│   │   ├── types/                  # Tipagens TypeScript compartilhadas
+│   │   └── styles/                 # Tailwind, variáveis de tema, fontes
+│
+├── server/                          # Backend (Node.js + Express + Prisma)
+│   ├── controllers/                # Lógica de cada rota/módulo
+│   ├── routes/                     # Arquivos de rotas (CRM, tarefas, etc)
+│   ├── middlewares/               # Auth, logger, error handler
+│   ├── models/                     # Prisma Models (opcional para schema helpers)
+│   ├── services/                   # Lógica de negócio (ex: cálculo de NPS, metas)
+│   ├── utils/                      # Utilitários (cripto, datas, conversões)
+│   ├── auth/                       # Estratégias do Passport, RBAC
+│   ├── prisma/
+│   │   ├── schema.prisma           # Definição do banco de dados
+│   │   ├── migrations/             # Histórico de mudanças
+│   ├── storage.ts                  # Integrações com banco (usuários, clientes, tarefas)
+│   ├── app.ts                      # Setup principal do Express
+│   └── index.ts                    # Entry point (start server)
+│
+├── automations/                    # Pastas para lidar com Webhooks e n8n
+│   ├── webhooks/                  # Webhooks externos (ex: pagamento, lead, etc)
+│   ├── pipelines/                 # Scripts de automações por setor
+│   └── n8n-mapping.md             # Mapeamento de automações no N8N
+│
+├── shared/                         # Tipagens e esquemas comuns entre frontend/backend
+│   ├── schema.ts                  # Interfaces e enums comuns
+│   └── constants.ts               # Constantes globais (roles, status, formatos)
+│
+├── .env.example                    # Variáveis de ambiente
+├── Dockerfile                      # Docker para produção
+├── docker-compose.yml              # Se usar PostgreSQL local
+├── README.md                       # Documentação inicial do projeto
+└── vercel.json                     # (Se for implantar frontend via Vercel)

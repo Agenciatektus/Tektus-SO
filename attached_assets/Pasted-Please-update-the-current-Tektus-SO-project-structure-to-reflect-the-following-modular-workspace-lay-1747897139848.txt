@@ -1,0 +1,131 @@
+Please update the current Tektus.SO project structure to reflect the following modular workspace layout, based on a fully functional work OS for marketing agencies. The system should have a left sidebar with expandable sections (accordion or nested), each containing the described internal modules and views. Each page should follow the existing dark theme with green/teal accents.
+
+Structure each module as a dynamic React route (with role-based access), and use TypeScript with Prisma for backend schema. Persist the modularity using folder structure and reusable layouts.
+
+🗂 MODULES AND SUBPAGES
+
+1. ADMINISTRATION
+- Services & Pricing Table
+- Documents Repository
+- Organizational Chart
+- Partner List
+- Culture Code (static page with formatted text)
+- Brand Identity (page with uploaded files: colors, fonts)
+- Links & Tools Table (columns: Name, Topic, URL)
+
+2. CLIENTS CENTER
+- Meeting Calendar (Google Calendar integration)
+- Client Control (main table with status, health score, fee, etc.)
+- Client Dashboards (table linking to each client workspace)
+- NPS Tracker
+- Onboarding Pipelines
+- Crisis Management (kanban)
+- Offboarding & Churn (kanban + churn database)
+
+3. CONTENT CENTER
+- Content Guidelines & Docs
+- Account Setup Guides
+- Seasonal Dates Table
+- Editorial Pipeline (columns: status, start date, client, strategist, goal, deadline)
+- Content Production Table (detailed table with platform, format, status, roles, editorial line)
+- Publication Calendar
+
+4. TASKS CENTER
+- All Tasks View: kanban by priority, kanban by phase, table by assignee
+- Table columns: status, title, due date, request date, remaining days, priority, assignee, department, requester
+- Each task has a full detail view with Notion-like blocks: text, checklists, tables
+
+5. TRAFFIC CENTER
+- Traffic Team List
+- Task View for Traffic Team
+- Campaign Management Menu
+  - Meta Ads
+  - Google Ads
+- Campaign Naming Standards
+- Investment Strategy Documentation
+
+6. SALES TEAM
+- CRM Full Pipeline
+- Sales Team View
+- Sales Meeting Calendar (Google Calendar)
+- Internal Docs:
+  - Sales Scripts
+  - Ideal Client Profile DB
+  - Sales Goals & Funnel Monitoring
+  - Client Intake Form
+  - Objection Handling Docs
+  - Sales Proposal Template
+  - Service Catalog
+  - Sales Manual (what we sell, how we sell, how we deliver)
+
+7. WEBSITE CREATION
+- Active Projects Table
+- Completed Projects Table
+- Plugin Database
+- Web References
+- Checklist: Site Onboarding
+- Checklist: E-commerce Onboarding
+
+8. LEGAL
+- Legal Case Kanban
+- Contract Registry Table
+- Contracts Templates DB
+- Terms & Conditions
+- Privacy Policy
+- Legal Notes Archive
+
+9. AGENCY MARKETING
+- Internal Campaigns (Meta / Google)
+- Email Sequences
+- Lead Magnets
+- Success Cases
+- Content Management
+
+10. OKRs
+- Pro-Labore Summary (per year)
+- 3-Month Growth Plan
+- OKR Tracker (columns: goal, months, owner, priority, status, dates, links)
+
+11. HR
+- Strategic Onboarding (training)
+- Bureaucratic Onboarding (hiring steps)
+- Team Offboarding
+- HR Menu:
+  - Team List
+  - Talent Pool
+  - Job Openings
+  - Salary Ladder
+  - Responsibility Matrix
+  - Rules & Agreements
+  - Culture Code (again, linked here too)
+
+12. FINANCE
+- Monthly Summary View (trimesters)
+- Outstanding Invoices
+- Expense Breakdown Chart (by category)
+- Revenue Composition (recurring vs one-time)
+- Account Balances (by bank or card)
+- Debt Overview
+- Quick Action Buttons: Add Expense, Income, Budget, Debt, Goal
+- Databases:
+  - Accounts
+  - Expenses
+  - Incomes
+  - Categories
+  - Savings Goals
+  - Debt Tracker
+  - Budgets
+  - Monthly Balance Sheet
+- Finance Menu:
+  - Accounting View (monthly balance)
+  - Wishlist
+  - Client Billing Tracker
+  - Payroll Table
+  - Payment Calendar
+  - Manual Entries View
+
+OTHER REQUIREMENTS
+- Role-based access for all modules (Admin, Sales, Ops, Finance, Traffic, HR)
+- Pages should be generated as components with layout inheritance
+- Use Prisma schema to model every module's tables accordingly
+- Maintain clean, scalable file structure

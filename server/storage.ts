@@ -629,23 +629,42 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getRevenueByMonth(months: number = 12) {
-    const result = await db
-      .select({
-        month: sql<string>`TO_CHAR(${invoices.paidDate}, 'YYYY-MM')`,
-        revenue: sql<number>`SUM(${invoices.total})::numeric`
-      })
-      .from(invoices)
-      .where(and(
-        eq(invoices.status, 'paid'),
-        gte(invoices.paidDate, sql`CURRENT_DATE - INTERVAL '${months} months'`)
-      ))
-      .groupBy(sql`TO_CHAR(${invoices.paidDate}, 'YYYY-MM')`)
-      .orderBy(sql`TO_CHAR(${invoices.paidDate}, 'YYYY-MM')`);
+    try {
+      // Calculate the date threshold
+      const dateThreshold = new Date();
+      dateThreshold.setMonth(dateThreshold.getMonth() - months);
+      
+      const result = await db
+        .select({
+          month: sql<string>`TO_CHAR(${invoices.paidDate}, 'YYYY-MM')`,
+          revenue: sql<number>`SUM(${invoices.total})::numeric`
+        })
+        .from(invoices)
+        .where(and(
+          eq(invoices.status, 'paid'),
+          gte(invoices.paidDate, dateThreshold)
+        ))
+        .groupBy(sql`TO_CHAR(${invoices.paidDate}, 'YYYY-MM')`)
+        .orderBy(sql`TO_CHAR(${invoices.paidDate}, 'YYYY-MM')`);
 
-    return result.map(r => ({
-      month: r.month,
-      revenue: Number(r.revenue || 0)
-    }));
+      return result.map(r => ({
+        month: r.month,
+        revenue: Number(r.revenue || 0)
+      }));
+    } catch (error) {
+      console.error('Error fetching revenue by month:', error);
+      // Return empty array with last 12 months as fallback
+      const fallbackData = [];
+      for (let i = months - 1; i >= 0; i--) {
+        const date = new Date();
+        date.setMonth(date.getMonth() - i);
+        fallbackData.push({
+          month: date.toISOString().slice(0, 7),
+          revenue: 0
+        });
+      }
+      return fallbackData;
+    }
   }
 }
 
