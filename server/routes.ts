@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
+import { seedDemoData } from "./demo-data";
 import { z } from "zod";
 import { 
   insertClientSchema, insertProjectSchema, insertTaskSchema, 
