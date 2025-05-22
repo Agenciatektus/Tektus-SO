@@ -1,11 +1,12 @@
 import { 
   users, clients, projects, tasks, invoices, payments, content, 
-  onboardingFlows, offboardingFlows, feedback,
+  onboardingFlows, offboardingFlows, feedback, salesLeads, salesActivities,
   type User, type InsertUser, type Client, type InsertClient,
   type Project, type InsertProject, type Task, type InsertTask,
   type Invoice, type InsertInvoice, type Payment, type InsertPayment,
   type Content, type InsertContent, type OnboardingFlow, type InsertOnboardingFlow,
-  type OffboardingFlow, type InsertOffboardingFlow, type Feedback, type InsertFeedback
+  type OffboardingFlow, type InsertOffboardingFlow, type Feedback, type InsertFeedback,
+  type SalesLead, type InsertSalesLead, type SalesActivity, type InsertSalesActivity
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, or, gte, lte, sql, count } from "drizzle-orm";

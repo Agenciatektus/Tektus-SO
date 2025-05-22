@@ -4,7 +4,7 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Enums
-export const userRoleEnum = pgEnum("user_role", ["admin", "operations", "sales", "finance"]);
+export const userRoleEnum = pgEnum("user_role", ["admin", "operations", "sales", "finance", "content", "traffic", "hr"]);
 export const taskStatusEnum = pgEnum("task_status", ["pending", "in_progress", "completed", "cancelled"]);
 export const taskPriorityEnum = pgEnum("task_priority", ["low", "medium", "high", "urgent"]);
 export const clientStatusEnum = pgEnum("client_status", ["active", "inactive", "onboarding", "offboarding"]);
@@ -12,6 +12,10 @@ export const clientHealthEnum = pgEnum("client_health", ["healthy", "at_risk", "
 export const invoiceStatusEnum = pgEnum("invoice_status", ["draft", "sent", "paid", "overdue", "cancelled"]);
 export const paymentStatusEnum = pgEnum("payment_status", ["pending", "completed", "failed"]);
 export const contentStatusEnum = pgEnum("content_status", ["draft", "review", "approved", "published"]);
+
+// Sales Pipeline Enums
+export const leadStageEnum = pgEnum("lead_stage", ["new_lead", "contact_made", "meeting_scheduled", "proposal_sent", "negotiation", "won", "lost"]);
+export const leadSourceEnum = pgEnum("lead_source", ["website", "referral", "social_media", "email_marketing", "cold_outreach", "advertising", "networking", "other"]);
 
 // Users table
 export const users = pgTable("users", {
@@ -175,6 +179,43 @@ export const feedback = pgTable("feedback", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Sales Leads table
+export const salesLeads = pgTable("sales_leads", {
+  id: serial("id").primaryKey(),
+  companyName: text("company_name").notNull(),
+  contactName: text("contact_name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  position: text("position"),
+  stage: leadStageEnum("stage").notNull().default("new_lead"),
+  source: leadSourceEnum("source").notNull().default("other"),
+  dealValue: decimal("deal_value", { precision: 10, scale: 2 }),
+  estimatedCloseDate: timestamp("estimated_close_date"),
+  actualCloseDate: timestamp("actual_close_date"),
+  probability: integer("probability").default(10), // percentage 0-100
+  assignedUserId: integer("assigned_user_id").references(() => users.id).notNull(),
+  notes: text("notes"),
+  lastContactDate: timestamp("last_contact_date"),
+  nextFollowUpDate: timestamp("next_follow_up_date"),
+  lostReason: text("lost_reason"), // only if stage is 'lost'
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Sales Activities table (track interactions with leads)
+export const salesActivities = pgTable("sales_activities", {
+  id: serial("id").primaryKey(),
+  leadId: integer("lead_id").references(() => salesLeads.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  type: text("type").notNull(), // call, email, meeting, proposal, note
+  subject: text("subject").notNull(),
+  description: text("description"),
+  scheduledDate: timestamp("scheduled_date"),
+  completedDate: timestamp("completed_date"),
+  outcome: text("outcome"), // successful, no_answer, rescheduled, etc.
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   assignedClients: many(clients),
@@ -184,6 +225,8 @@ export const usersRelations = relations(users, ({ many }) => ({
   content: many(content),
   onboardingFlows: many(onboardingFlows),
   offboardingFlows: many(offboardingFlows),
+  assignedLeads: many(salesLeads),
+  salesActivities: many(salesActivities),
 }));
 
 export const clientsRelations = relations(clients, ({ one, many }) => ({
@@ -293,6 +336,25 @@ export const feedbackRelations = relations(feedback, ({ one }) => ({
   }),
 }));
 
+export const salesLeadsRelations = relations(salesLeads, ({ one, many }) => ({
+  assignedUser: one(users, {
+    fields: [salesLeads.assignedUserId],
+    references: [users.id],
+  }),
+  activities: many(salesActivities),
+}));
+
+export const salesActivitiesRelations = relations(salesActivities, ({ one }) => ({
+  lead: one(salesLeads, {
+    fields: [salesActivities.leadId],
+    references: [salesLeads.id],
+  }),
+  user: one(users, {
+    fields: [salesActivities.userId],
+    references: [users.id],
+  }),
+}));
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -360,6 +422,19 @@ export const insertFeedbackSchema = createInsertSchema(feedback).omit({
   respondedAt: true,
 });
 
+export const insertSalesLeadSchema = createInsertSchema(salesLeads).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  actualCloseDate: true,
+});
+
+export const insertSalesActivitySchema = createInsertSchema(salesActivities).omit({
+  id: true,
+  createdAt: true,
+  completedDate: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -381,3 +456,7 @@ export type OffboardingFlow = typeof offboardingFlows.$inferSelect;
 export type InsertOffboardingFlow = z.infer<typeof insertOffboardingFlowSchema>;
 export type Feedback = typeof feedback.$inferSelect;
 export type InsertFeedback = z.infer<typeof insertFeedbackSchema>;
+export type SalesLead = typeof salesLeads.$inferSelect;
+export type InsertSalesLead = z.infer<typeof insertSalesLeadSchema>;
+export type SalesActivity = typeof salesActivities.$inferSelect;
+export type InsertSalesActivity = z.infer<typeof insertSalesActivitySchema>;
