@@ -1,0 +1,50 @@
+Let’s move forward with the next set of priorities for the Tektus.SO platform. Please implement the following features:
+
+---
+
+✅ 1. Finalize Google Calendar Integration  
+- Complete the existing calendar integration for the Clients Center and Sales Team modules  
+- When scheduling a meeting (via task or pipeline stage), allow selecting:
+  • Title, date, time, client email, description, and responsible user  
+- Create and sync events directly to Google Calendar using the logged-in user’s credentials (OAuth)  
+- Save event IDs and sync status in the database for later updates or deletion
+
+---
+
+✅ 2. Build Kanban Interfaces  
+- **Crisis Management Module**:
+  • Create a drag-and-drop Kanban view with phases like “In Crisis”, “Resolving”, “Resolved”  
+  • Each card should display the client name, issue summary, priority, responsible team member  
+- **Legal Module – Legal Cases**:
+  • Kanban view with stages like “Open”, “In Review”, “In Process”, “Resolved”  
+  • Add fields: case title, client, internal owner, documents attached, status update log  
+  • Allow comments and attachments on each legal case
+
+---
+
+✅ 3. Expand the Legal Module with Contract Templates  
+- Add a section for reusable contract templates  
+- Allow admin to upload .docx or .pdf templates and categorize them by type (Service, NDA, Termination)  
+- Include a viewer and download option  
+- Make it possible to duplicate a template into a contract assigned to a client
+
+---
+
+✅ 4. Implement Campaign Management Interface in Traffic Center  
+- Build a visual dashboard for paid traffic campaigns  
+- Separate by platform: Meta Ads and Google Ads  
+- Each campaign should include: campaign name, client, objective, daily budget, current spend, CTR, ROAS, responsible media buyer  
+- Add filters by client, status, and platform  
+- Allow quick edit and status toggle
+
+---
+
+✅ 5. Add Document Repository in Administration Module  
+- Create a centralized file manager  
+- Allow categorized upload (PDFs, slides, spreadsheets, etc.) with tags like “HR”, “Finance”, “Legal”, “Strategy”  
+- Support preview and download  
+- Include upload metadata: uploader, upload date, file type, access permission (all, restricted)
+
+---
+
+Please confirm once these components are implemented and live. This will complete key operational layers of Tektus.SO and help us validate automation workflows, role-based access, and multi-department collaboration.

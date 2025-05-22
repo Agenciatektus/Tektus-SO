@@ -1,0 +1,93 @@
+Please confirm which of the following modules and subpages are currently operational in the Tektus.SO system.
+
+I'd like to ensure the project structure is aligned with the complete modular layout below, with proper page routing, role-based access, dynamic rendering, and data population.
+
+🗂 MODULES TO VERIFY:
+
+1. ADMINISTRATION
+- [ ] Services & Pricing Table
+- [ ] Documents Repository
+- [ ] Organizational Chart
+- [ ] Partner List
+- [ ] Culture Code (formatted static page)
+- [ ] Brand Identity (file viewer for colors, fonts)
+- [ ] Links & Tools Table (with Name, Topic, URL columns)
+
+2. CLIENTS CENTER
+- [ ] Meeting Calendar (Google Calendar integration)
+- [ ] Client Control Table (status, score, fee, owner)
+- [ ] Client Dashboards
+- [ ] NPS Tracker
+- [ ] Onboarding Pipelines
+- [ ] Crisis Management (Kanban)
+- [ ] Offboarding & Churn (Kanban + data table)
+
+3. CONTENT CENTER
+- [ ] Content Guidelines & Docs
+- [ ] Account Setup Guides
+- [ ] Seasonal Dates Table
+- [ ] Editorial Pipeline Table
+- [ ] Content Production Table
+- [ ] Publication Calendar
+
+4. TASKS CENTER
+- [ ] All Tasks View (Kanban by priority, phase, and table)
+- [ ] Task Detail View with Notion-like editor
+- [ ] Task filters and sorting by assignee, department
+
+5. TRAFFIC CENTER
+- [ ] Traffic Team List
+- [ ] Traffic Tasks View
+- [ ] Campaign Management Menu (Meta / Google Ads)
+- [ ] Naming Standards
+- [ ] Investment Documentation
+
+6. SALES TEAM
+- [ ] CRM Pipeline (Kanban with stages)
+- [ ] Sales Team View
+- [ ] Sales Calendar (Google)
+- [ ] Internal Docs (Scripts, ICP, Goals, Funnel Monitoring, Proposal, Objections, Service Catalog)
+
+7. WEBSITE CREATION
+- [ ] Active Projects Table
+- [ ] Completed Projects Table
+- [ ] Plugin Database
+- [ ] Web References
+- [ ] Site & E-commerce Checklists
+
+8. LEGAL
+- [ ] Legal Case Kanban
+- [ ] Contract Registry Table
+- [ ] Contract Templates DB
+- [ ] Terms, Privacy Policy, Legal Notes
+
+9. AGENCY MARKETING
+- [ ] Internal Campaigns (Meta/Google)
+- [ ] Email Sequences
+- [ ] Lead Magnets
+- [ ] Case Studies
+- [ ] Internal Content Management
+
+10. OKRs
+- [ ] Pro-Labore Summary
+- [ ] 3-Month Growth Plan
+- [ ] OKR Tracker Table
+
+11. HR
+- [ ] Strategic Onboarding (Training)
+- [ ] Bureaucratic Onboarding
+- [ ] Team Offboarding
+- [ ] Team List, Talent Pool, Openings, Salary Ladder, Responsibility Matrix, Agreements
+
+12. FINANCE
+- [ ] Tracked revenue and expense data
+- [ ] Monthly Summary (per trimester)
+- [ ] Charts for Expenses, Revenue Composition
+- [ ] Account Balances, Debt Overview
+- [ ] Action buttons (add income, expense, etc.)
+- [ ] Full DBs: Expenses, Incomes, Budgets, Payroll, Tracker Tables
+
+Please review and mark which of the above modules are fully implemented and live.  
+Also confirm if routes are working correctly, pages are rendered with the proper layout, and role-based access is enforced.
+
+Let me know which parts still need implementation or refinement so we can prioritize next steps.
