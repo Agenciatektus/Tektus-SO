@@ -25,7 +25,11 @@ import {
   Users,
   HandshakeIcon,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  Clock,
+  AlertTriangle,
+  ExternalLink,
+  UserPlus
 } from "lucide-react";
 import { insertSalesLeadSchema, type SalesLead, type InsertSalesLead } from "@shared/schema";
 import { z } from "zod";
@@ -52,6 +56,54 @@ const sourceConfig = {
   other: { label: "Other", color: "bg-slate-100 text-slate-800" },
 };
 
+const industryConfig = {
+  ecommerce: { label: "E-commerce", color: "bg-emerald-100 text-emerald-800" },
+  saas: { label: "SaaS", color: "bg-blue-100 text-blue-800" },
+  healthcare: { label: "Healthcare", color: "bg-red-100 text-red-800" },
+  finance: { label: "Finance", color: "bg-green-100 text-green-800" },
+  education: { label: "Education", color: "bg-yellow-100 text-yellow-800" },
+  real_estate: { label: "Real Estate", color: "bg-orange-100 text-orange-800" },
+  manufacturing: { label: "Manufacturing", color: "bg-gray-100 text-gray-800" },
+  consulting: { label: "Consulting", color: "bg-purple-100 text-purple-800" },
+  agency: { label: "Agency", color: "bg-pink-100 text-pink-800" },
+  other: { label: "Other", color: "bg-slate-100 text-slate-800" },
+};
+
+// Industry-specific field configurations
+const industryFieldConfigs = {
+  ecommerce: [
+    { name: 'platform', label: 'E-commerce Platform', type: 'select', options: ['Shopify', 'WooCommerce', 'Magento', 'BigCommerce', 'Custom'] },
+    { name: 'monthlyRevenue', label: 'Monthly Revenue ($)', type: 'number' },
+    { name: 'productCount', label: 'Number of Products', type: 'number' },
+    { name: 'averageOrderValue', label: 'Average Order Value ($)', type: 'number' }
+  ],
+  saas: [
+    { name: 'userCount', label: 'Active Users', type: 'number' },
+    { name: 'mrr', label: 'Monthly Recurring Revenue ($)', type: 'number' },
+    { name: 'churnRate', label: 'Churn Rate (%)', type: 'number' },
+    { name: 'pricingModel', label: 'Pricing Model', type: 'select', options: ['Freemium', 'Subscription', 'One-time', 'Usage-based'] }
+  ],
+  healthcare: [
+    { name: 'facilityType', label: 'Facility Type', type: 'select', options: ['Hospital', 'Clinic', 'Private Practice', 'Dental', 'Mental Health'] },
+    { name: 'patientCount', label: 'Patient Count', type: 'number' },
+    { name: 'specialization', label: 'Specialization', type: 'text' },
+    { name: 'complianceNeeds', label: 'Compliance Requirements', type: 'text' }
+  ],
+  finance: [
+    { name: 'serviceType', label: 'Service Type', type: 'select', options: ['Banking', 'Insurance', 'Investment', 'Fintech', 'Accounting'] },
+    { name: 'aum', label: 'Assets Under Management ($)', type: 'number' },
+    { name: 'clientBase', label: 'Client Base Size', type: 'number' },
+    { name: 'regulations', label: 'Key Regulations', type: 'text' }
+  ],
+  agency: [
+    { name: 'agencyType', label: 'Agency Type', type: 'select', options: ['Marketing', 'Creative', 'Digital', 'PR', 'Full-service'] },
+    { name: 'clientCount', label: 'Active Clients', type: 'number' },
+    { name: 'teamSize', label: 'Team Size', type: 'number' },
+    { name: 'specialties', label: 'Specialties', type: 'text' }
+  ],
+  other: []
+};
+
 export default function SalesCRM() {
   const { toast } = useToast();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -64,6 +116,7 @@ export default function SalesCRM() {
     position: "",
     stage: "new_lead",
     source: "website",
+    industry: "other",
     dealValue: "0",
     probability: 10,
     assignedUserId: 1, // Will be replaced with current user
@@ -72,6 +125,25 @@ export default function SalesCRM() {
     lastContactDate: null,
     nextFollowUpDate: null,
     lostReason: null,
+    industryFields: null,
+    stageChangedAt: null,
+    isStagnant: false,
+    stagnantSince: null,
+    calendarEventId: null,
+    meetingLink: null,
+    meetingDate: null,
+  });
+
+  const [industryFields, setIndustryFields] = useState<{[key: string]: any}>({});
+  const [isCalendarDialogOpen, setIsCalendarDialogOpen] = useState(false);
+  const [selectedLeadForCalendar, setSelectedLeadForCalendar] = useState<SalesLead | null>(null);
+  const [calendarEventData, setCalendarEventData] = useState({
+    title: "",
+    date: "",
+    time: "",
+    duration: "60",
+    meetingLink: "",
+    notes: ""
   });
 
   const { data: leads, isLoading } = useQuery<SalesLead[]>({
@@ -121,6 +193,28 @@ export default function SalesCRM() {
     },
   });
 
+  const createCalendarEventMutation = useMutation({
+    mutationFn: async ({ leadId, eventData }: { leadId: number; eventData: any }) => {
+      const res = await apiRequest("POST", `/api/sales/leads/${leadId}/calendar-event`, eventData);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/sales/leads"] });
+      setIsCalendarDialogOpen(false);
+      toast({
+        title: "Success",
+        description: "Calendar event created successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const resetForm = () => {
     setNewLead({
       companyName: "",
@@ -130,6 +224,7 @@ export default function SalesCRM() {
       position: "",
       stage: "new_lead",
       source: "website",
+      industry: "other",
       dealValue: "0",
       probability: 10,
       assignedUserId: 1,
@@ -138,6 +233,58 @@ export default function SalesCRM() {
       lastContactDate: null,
       nextFollowUpDate: null,
       lostReason: null,
+      industryFields: null,
+      stageChangedAt: null,
+      isStagnant: false,
+      stagnantSince: null,
+      calendarEventId: null,
+      meetingLink: null,
+      meetingDate: null,
+    });
+    setIndustryFields({});
+  };
+
+  const handleIndustryChange = (industry: string) => {
+    setNewLead({ ...newLead, industry: industry as any });
+    setIndustryFields({}); // Reset industry-specific fields when industry changes
+  };
+
+  const handleIndustryFieldChange = (fieldName: string, value: any) => {
+    setIndustryFields(prev => ({
+      ...prev,
+      [fieldName]: value
+    }));
+  };
+
+  const handleScheduleMeeting = (lead: SalesLead) => {
+    setSelectedLeadForCalendar(lead);
+    setCalendarEventData({
+      title: `Meeting with ${lead.contactName} (${lead.companyName})`,
+      date: "",
+      time: "",
+      duration: "60",
+      meetingLink: "",
+      notes: `Sales meeting with ${lead.contactName} from ${lead.companyName}`
+    });
+    setIsCalendarDialogOpen(true);
+  };
+
+  const handleCreateCalendarEvent = () => {
+    if (!selectedLeadForCalendar) return;
+    
+    const startDateTime = new Date(`${calendarEventData.date}T${calendarEventData.time}`);
+    const endDateTime = new Date(startDateTime.getTime() + parseInt(calendarEventData.duration) * 60000);
+    
+    createCalendarEventMutation.mutate({
+      leadId: selectedLeadForCalendar.id,
+      eventData: {
+        title: calendarEventData.title,
+        startTime: startDateTime.toISOString(),
+        endTime: endDateTime.toISOString(),
+        attendeeEmail: selectedLeadForCalendar.email,
+        description: calendarEventData.notes,
+        meetingLink: calendarEventData.meetingLink
+      }
     });
   };
 
