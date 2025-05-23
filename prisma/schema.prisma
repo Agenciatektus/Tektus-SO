@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  admin
+  operations
+  sales
+  finance
+  content
+  traffic
+  hr
+}
+
+enum ClientStatus {
+  ativo
+  nao_iniciado
+  pausado
+  aviso_30_dias
+  finalizado
+}
+
+enum PaymentStatus {
+  pendente
+  em_dia
+  parcialmente_pago
+  atrasado
+  cortesia
+}
+
+enum ProjectPhase {
+  passagem_de_bastao
+  onboarding
+  planejamento
+  em_execucao
+  revisao_interna
+  monitoramento
+  concluido
+  offboarding
+}
+
+enum ClientType {
+  recorrente
+  pontual
+  coproducao
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  role      UserRole @default(operations)
+  isActive  Boolean  @default(true)
+  tasks     Task[]   @relation("AssignedTasks")
+  sessions  Session[]
+  customerClients Client[] @relation("UserCustomerSuccess")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Client {
+  id                Int           @id @default(autoincrement())
+  name              String
+  status            ClientStatus  @default(ativo)
+  saleDate          DateTime?
+  contractValue     Float?
+  paymentDay        Int?
+  paymentStatus     PaymentStatus @default(pendente)
+  projectPhase      ProjectPhase? 
+  clientType        ClientType?   @default(recorrente)
+  contractEnd       DateTime?
+  adBudget          Float?
+  customerSuccessId Int?
+  customerSuccess   User?         @relation("UserCustomerSuccess", fields: [customerSuccessId], references: [id])
+  mainContact       String?
+  email             String        @unique
+  phone             String?
+  employees         Int?
+  contractLink      String?
+  retention         Int?          // meses
+  ltv               Float?        // Calculado: contractValue * retention
+  healthScore       Float         @default(5)
+  projects          Project[]
+  invoices          Invoice[]
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+}
+
+model Project {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  client      Client    @relation(fields: [clientId], references: [id])
+  clientId    Int
+  tasks       Task[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Task {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  status      String    @default("pending")
+  dueDate     DateTime?
+  project     Project   @relation(fields: [projectId], references: [id])
+  projectId   Int
+  assignedTo  User?     @relation("AssignedTasks", fields: [assignedToId], references: [id])
+  assignedToId Int?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Invoice {
+  id        Int      @id @default(autoincrement())
+  amount    Float
+  status    String   @default("pending")
+  client    Client   @relation(fields: [clientId], references: [id])
+  clientId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+

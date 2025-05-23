@@ -1,47 +1,57 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Lato:wght@300;400;700&display=swap');
+@import "./components/ui/notion-table/styles.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: 210 11% 15%;
-  --foreground: 0 0% 98%;
-  --muted: 240 3.7% 15.9%;
-  --muted-foreground: 240 5% 64.9%;
-  --popover: 210 11% 15%;
-  --popover-foreground: 0 0% 98%;
-  --card: 210 11% 19%;
-  --card-foreground: 0 0% 98%;
-  --border: 240 3.7% 25%;
-  --input: 240 3.7% 25%;
-  --primary: 170 100% 41%;
-  --primary-foreground: 210 40% 10%;
-  --secondary: 240 3.7% 15.9%;
-  --secondary-foreground: 0 0% 98%;
-  --accent: 240 3.7% 15.9%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
-  --ring: 170 100% 41%;
-  --radius: 0.75rem;
-  --chart-1: 170 100% 41%;
-  --chart-2: 160 60% 45%;
-  --chart-3: 30 80% 55%;
-  --chart-4: 280 65% 60%;
-  --chart-5: 340 75% 55%;
-  --sidebar-background: 210 11% 15%;
-  --sidebar-foreground: 0 0% 98%;
-  --sidebar-primary: 170 100% 41%;
-  --sidebar-primary-foreground: 210 40% 10%;
-  --sidebar-accent: 240 3.7% 25%;
-  --sidebar-accent-foreground: 0 0% 98%;
-  --sidebar-border: 240 3.7% 25%;
-  --sidebar-ring: 170 100% 41%;
-}
-
 @layer base {
-  * {
-    @apply border-border;
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 210 10% 9%;
+    --card: 0 0% 100%;
+    --card-foreground: 210 10% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 10% 9%;
+    --primary: 150 100% 60%; /* #00FF85 */
+    --primary-foreground: 210 10% 9%;
+    --secondary: 0 0% 85%; /* #D9D9D9 */
+    --secondary-foreground: 210 10% 9%;
+    --muted: 0 0% 85%;
+    --muted-foreground: 210 10% 50%;
+    --accent: 150 100% 53%; /* #00DD4B */
+    --accent-foreground: 210 10% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 85%; /* #D9D9D9 */
+    --input: 0 0% 85%;
+    --ring: 150 100% 60%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 210 7% 9%; /* #161817 */
+    --foreground: 0 0% 100%; /* #FFFFFF */
+    --card: 210 7% 9%; /* #161817 */
+    --card-foreground: 0 0% 100%;
+    --popover: 210 7% 9%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 150 100% 60%; /* #00FF85 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 53%; /* #0D100F */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 210 7% 15%;
+    --muted-foreground: 0 0% 100%;
+    --accent: 150 100% 53%; /* #00DD4B */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 6%; /* #0D100F */
+    --input: 0 0% 6%;
+    --ring: 150 100% 60%;
+  }
+
+  html {
+    font-size: 14px;
   }
 
   body {
@@ -50,8 +60,12 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-space;
+    @apply font-lato font-bold;
   }
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+  h4, h5, h6 { font-size: 1.125rem; }
 
   .font-space {
     font-family: 'Space Grotesk', sans-serif;
@@ -82,6 +96,14 @@
   .glow-hover:hover {
     box-shadow: 0 0 30px theme(colors.primary / 30%);
     transition: box-shadow 0.3s ease;
+  }
+
+  .text-gradient-tektus {
+    background: linear-gradient(90deg, #00FF85 0%, #00DD4B 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
   }
 }
 

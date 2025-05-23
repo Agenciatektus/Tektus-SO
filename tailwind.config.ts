@@ -5,6 +5,9 @@ export default {
   content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        lato: ["Lato", "sans-serif"],
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -61,6 +64,13 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Paleta Tektus SO
+        "tektus-dark": "#161817",
+        "tektus-black": "#0D100F",
+        "tektus-white": "#FFFFFF",
+        "tektus-gray": "#D9D9D9",
+        "tektus-green": "#00FF85",
+        "tektus-green-dark": "#00DD4B",
       },
       keyframes: {
         "accordion-down": {

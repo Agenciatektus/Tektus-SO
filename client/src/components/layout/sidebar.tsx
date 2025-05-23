@@ -26,7 +26,8 @@ import {
   Scale,
   Megaphone,
   Globe,
-  UserCheck
+  UserCheck,
+  Folder
 } from "lucide-react";
 
 const navigationItems = [
@@ -35,6 +36,28 @@ const navigationItems = [
     icon: LayoutDashboard,
     href: "/",
     items: []
+  },
+  {
+    title: "Central de Tarefas",
+    icon: Folder,
+    items: [
+      { name: "Tarefas", href: "/central-tarefas/tarefas" },
+      { name: "Painel de Desempenho", href: "/central-tarefas/painel-desempenho" },
+    ],
+  },
+  {
+    title: "Central de Clientes",
+    icon: Users,
+    items: [
+      { name: "Agenda de Reuniões", href: "/central-clientes/agenda-reunioes" },
+      { name: "Controle de Clientes", href: "/central-clientes/controle-clientes" },
+      { name: "Dashboard Clientes", href: "/central-clientes/dashboard-clientes" },
+      { name: "NPS Tracker", href: "/central-clientes/nps-tracker" },
+      { name: "Onboarding Cliente", href: "/central-clientes/onboarding" },
+      { name: "Gestão de Crise", href: "/central-clientes/gestao-crise" },
+      { name: "OffBoarding e Churn", href: "/central-clientes/offboarding-churn" },
+    ],
+    roles: ['admin', 'operations', 'sales']
   },
   {
     title: "Administration",
@@ -55,7 +78,7 @@ const navigationItems = [
     icon: Users,
     items: [
       { name: "Meeting Calendar", href: "/clients/calendar" },
-      { name: "Client Control", href: "/clients/control" },
+      { name: "Controle de Clientes", href: "/clientes/controle" },
       { name: "Client Dashboards", href: "/clients/dashboards" },
       { name: "NPS Tracker", href: "/clients/nps" },
       { name: "Onboarding Pipelines", href: "/clients/onboarding" },
@@ -76,16 +99,6 @@ const navigationItems = [
       { name: "Publication Calendar", href: "/content/calendar" },
     ],
     roles: ['admin', 'operations', 'content']
-  },
-  {
-    title: "Tasks Center",
-    icon: CheckSquare,
-    items: [
-      { name: "All Tasks View", href: "/tasks/all" },
-      { name: "Kanban by Priority", href: "/tasks/priority" },
-      { name: "Kanban by Phase", href: "/tasks/phase" },
-      { name: "Table by Assignee", href: "/tasks/assignee" },
-    ]
   },
   {
     title: "Traffic Center",
@@ -271,14 +284,14 @@ export function Sidebar() {
               if (item.items.length === 0) {
                 // Direct link item (like Dashboard)
                 return (
-                  <Link key={item.title} href={item.href}>
+                  <Link key={item.title} to={item.href || "/"}>
                     <Button
                       variant="ghost"
-                      className={`w-full justify-start space-x-3 h-9 ${
-                        isActive 
-                          ? "bg-primary/10 text-primary border border-primary/20" 
-                          : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-                      }`}
+                      className={`w-full justify-start space-x-3 h-9 transition-all
+                        ${isActive
+                          ? 'bg-tektus-green text-tektus-black dark:bg-tektus-green dark:text-tektus-black border-l-4 border-tektus-green dark:border-tektus-green font-bold shadow-sm'
+                          : 'text-tektus-black dark:text-white hover:bg-tektus-gray/40 dark:hover:bg-tektus-gray/10'}
+                      `}
                     >
                       <Icon className="w-4 h-4" />
                       <span className="font-medium text-sm">{item.title}</span>
@@ -292,11 +305,11 @@ export function Sidebar() {
                   <CollapsibleTrigger asChild>
                     <Button
                       variant="ghost"
-                      className={`w-full justify-between h-9 ${
-                        isActive 
-                          ? "bg-primary/10 text-primary border border-primary/20" 
-                          : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-                      }`}
+                      className={`w-full justify-between h-9 transition-all
+                        ${isActive
+                          ? 'bg-tektus-green text-tektus-black dark:bg-tektus-green dark:text-tektus-black border-l-4 border-tektus-green dark:border-tektus-green font-bold shadow-sm'
+                          : 'text-tektus-black dark:text-white hover:bg-tektus-gray/40 dark:hover:bg-tektus-gray/10'}
+                      `}
                     >
                       <div className="flex items-center space-x-3">
                         <Icon className="w-4 h-4" />
@@ -311,15 +324,15 @@ export function Sidebar() {
                   </CollapsibleTrigger>
                   <CollapsibleContent className="pl-6 pt-1 space-y-1">
                     {item.items.map((subItem: any) => (
-                      <Link key={subItem.name} href={subItem.href}>
+                      <Link key={subItem.name} to={subItem.href || "/"}>
                         <Button
                           variant="ghost"
                           size="sm"
-                          className={`w-full justify-start text-xs h-8 ${
-                            isActiveSubItem(subItem.href)
-                              ? "bg-primary/5 text-primary" 
-                              : "text-muted-foreground hover:text-foreground hover:bg-accent/30"
-                          }`}
+                          className={`w-full justify-start text-xs h-8 transition-all
+                            ${isActiveSubItem(subItem.href)
+                              ? 'bg-tektus-green/20 text-tektus-black dark:bg-tektus-green/80 dark:text-tektus-black font-bold'
+                              : 'text-tektus-black dark:text-white hover:bg-tektus-gray/30 dark:hover:bg-tektus-gray/10'}
+                          `}
                         >
                           {subItem.name}
                         </Button>

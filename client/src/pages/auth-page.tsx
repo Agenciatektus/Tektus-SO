@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Grid, Users, TrendingUp, BarChart3 } from "lucide-react";
+import { Loader2, Grid, Users, TrendingUp, BarChart3, Eye, EyeOff } from "lucide-react";
 import { insertUserSchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -16,7 +16,13 @@ const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
-const registerSchema = insertUserSchema.extend({
+const registerSchema = z.object({
+  username: z.string().min(1, "Username is required"),
+  email: z.string().email("Invalid email"),
+  password: z.string().min(1, "Password is required"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  role: z.enum(["admin", "operations", "sales", "finance", "content", "traffic", "hr"] as const).default("operations"),
   confirmPassword: z.string().min(1, "Please confirm your password"),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
@@ -42,7 +48,9 @@ export default function AuthPage() {
     role: "operations",
   });
   const [loginErrors, setLoginErrors] = useState<Partial<LoginForm>>({});
-  const [registerErrors, setRegisterErrors] = useState<Partial<RegisterForm>>({});
+  const [registerErrors, setRegisterErrors] = useState<Record<string, string>>({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Redirect if already logged in
   if (user) {
@@ -73,17 +81,23 @@ export default function AuthPage() {
     e.preventDefault();
     
     try {
+      console.log('Iniciando validação do formulário de registro...');
       const validatedData = registerSchema.parse(registerForm);
       setRegisterErrors({});
       
       const { confirmPassword, ...userData } = validatedData;
+      console.log('Dados validados com sucesso:', { ...userData, password: '***' });
+      
+      console.log('Iniciando requisição de registro...');
       await registerMutation.mutateAsync(userData);
+      console.log('Usuário registrado com sucesso!');
     } catch (error) {
+      console.error('Erro durante o registro:', error);
       if (error instanceof z.ZodError) {
-        const errors: Partial<RegisterForm> = {};
+        const errors: Record<string, string> = {};
         error.errors.forEach((err) => {
           if (err.path[0]) {
-            errors[err.path[0] as keyof RegisterForm] = err.message;
+            errors[err.path[0] as string] = err.message;
           }
         });
         setRegisterErrors(errors);
@@ -107,35 +121,35 @@ export default function AuthPage() {
                 <p className="text-sm text-muted-foreground">Marketing OS</p>
               </div>
             </div>
-            <h2 className="text-3xl font-space font-bold text-foreground">Welcome back</h2>
+            <h2 className="text-3xl font-space font-bold text-foreground">Bem-vindo</h2>
             <p className="text-muted-foreground mt-2">
-              Sign in to your marketing operations center
+              Entre ou crie sua conta para acessar o centro de operações
             </p>
           </div>
 
           {/* Auth Forms */}
           <Tabs defaultValue="login" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Sign In</TabsTrigger>
-              <TabsTrigger value="register">Sign Up</TabsTrigger>
+              <TabsTrigger value="login">Entrar</TabsTrigger>
+              <TabsTrigger value="register">Criar Conta</TabsTrigger>
             </TabsList>
             
             <TabsContent value="login">
               <Card>
                 <CardHeader>
-                  <CardTitle>Sign In</CardTitle>
+                  <CardTitle>Entrar</CardTitle>
                   <CardDescription>
-                    Enter your credentials to access your dashboard
+                    Digite suas credenciais para acessar o dashboard
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleLogin} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="login-username">Username</Label>
+                      <Label htmlFor="login-username">Usuário</Label>
                       <Input
                         id="login-username"
                         type="text"
-                        placeholder="Enter your username"
+                        placeholder="Digite seu usuário"
                         value={loginForm.username}
                         onChange={(e) => setLoginForm({ ...loginForm, username: e.target.value })}
                         className={loginErrors.username ? "border-destructive" : ""}
@@ -145,15 +159,26 @@ export default function AuthPage() {
                       )}
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="login-password">Password</Label>
-                      <Input
-                        id="login-password"
-                        type="password"
-                        placeholder="Enter your password"
-                        value={loginForm.password}
-                        onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
-                        className={loginErrors.password ? "border-destructive" : ""}
-                      />
+                      <Label htmlFor="login-password">Senha</Label>
+                      <div className="relative">
+                        <Input
+                          id="login-password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Digite sua senha"
+                          value={loginForm.password}
+                          onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                          className={loginErrors.password ? "border-destructive" : ""}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </Button>
+                      </div>
                       {loginErrors.password && (
                         <p className="text-sm text-destructive">{loginErrors.password}</p>
                       )}
@@ -166,10 +191,10 @@ export default function AuthPage() {
                       {loginMutation.isPending ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Signing in...
+                          Entrando...
                         </>
                       ) : (
-                        "Sign In"
+                        "Entrar"
                       )}
                     </Button>
                   </form>
@@ -180,20 +205,20 @@ export default function AuthPage() {
             <TabsContent value="register">
               <Card>
                 <CardHeader>
-                  <CardTitle>Create Account</CardTitle>
+                  <CardTitle>Criar Conta</CardTitle>
                   <CardDescription>
-                    Get started with your marketing operations center
+                    Preencha os dados para criar sua conta
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleRegister} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="register-firstName">First Name</Label>
+                        <Label htmlFor="register-firstName">Nome</Label>
                         <Input
                           id="register-firstName"
                           type="text"
-                          placeholder="John"
+                          placeholder="João"
                           value={registerForm.firstName}
                           onChange={(e) => setRegisterForm({ ...registerForm, firstName: e.target.value })}
                           className={registerErrors.firstName ? "border-destructive" : ""}
@@ -203,11 +228,11 @@ export default function AuthPage() {
                         )}
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="register-lastName">Last Name</Label>
+                        <Label htmlFor="register-lastName">Sobrenome</Label>
                         <Input
                           id="register-lastName"
                           type="text"
-                          placeholder="Doe"
+                          placeholder="Silva"
                           value={registerForm.lastName}
                           onChange={(e) => setRegisterForm({ ...registerForm, lastName: e.target.value })}
                           className={registerErrors.lastName ? "border-destructive" : ""}
@@ -223,7 +248,7 @@ export default function AuthPage() {
                       <Input
                         id="register-email"
                         type="email"
-                        placeholder="john@example.com"
+                        placeholder="joao@exemplo.com"
                         value={registerForm.email}
                         onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })}
                         className={registerErrors.email ? "border-destructive" : ""}
@@ -234,11 +259,11 @@ export default function AuthPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="register-username">Username</Label>
+                      <Label htmlFor="register-username">Usuário</Label>
                       <Input
                         id="register-username"
                         type="text"
-                        placeholder="johndoe"
+                        placeholder="joaosilva"
                         value={registerForm.username}
                         onChange={(e) => setRegisterForm({ ...registerForm, username: e.target.value })}
                         className={registerErrors.username ? "border-destructive" : ""}
@@ -249,19 +274,22 @@ export default function AuthPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="register-role">Role</Label>
+                      <Label htmlFor="register-role">Função</Label>
                       <Select
                         value={registerForm.role}
                         onValueChange={(value) => setRegisterForm({ ...registerForm, role: value as any })}
                       >
                         <SelectTrigger className={registerErrors.role ? "border-destructive" : ""}>
-                          <SelectValue placeholder="Select your role" />
+                          <SelectValue placeholder="Selecione sua função" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="admin">Admin</SelectItem>
-                          <SelectItem value="operations">Operations</SelectItem>
-                          <SelectItem value="sales">Sales</SelectItem>
-                          <SelectItem value="finance">Finance</SelectItem>
+                          <SelectItem value="admin">Administrador</SelectItem>
+                          <SelectItem value="operations">Operações</SelectItem>
+                          <SelectItem value="sales">Vendas</SelectItem>
+                          <SelectItem value="finance">Financeiro</SelectItem>
+                          <SelectItem value="content">Conteúdo</SelectItem>
+                          <SelectItem value="traffic">Tráfego</SelectItem>
+                          <SelectItem value="hr">RH</SelectItem>
                         </SelectContent>
                       </Select>
                       {registerErrors.role && (
@@ -270,30 +298,52 @@ export default function AuthPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="register-password">Password</Label>
-                      <Input
-                        id="register-password"
-                        type="password"
-                        placeholder="Create a strong password"
-                        value={registerForm.password}
-                        onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
-                        className={registerErrors.password ? "border-destructive" : ""}
-                      />
+                      <Label htmlFor="register-password">Senha</Label>
+                      <div className="relative">
+                        <Input
+                          id="register-password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Crie uma senha forte"
+                          value={registerForm.password}
+                          onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
+                          className={registerErrors.password ? "border-destructive" : ""}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </Button>
+                      </div>
                       {registerErrors.password && (
                         <p className="text-sm text-destructive">{registerErrors.password}</p>
                       )}
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="register-confirmPassword">Confirm Password</Label>
-                      <Input
-                        id="register-confirmPassword"
-                        type="password"
-                        placeholder="Confirm your password"
-                        value={registerForm.confirmPassword}
-                        onChange={(e) => setRegisterForm({ ...registerForm, confirmPassword: e.target.value })}
-                        className={registerErrors.confirmPassword ? "border-destructive" : ""}
-                      />
+                      <Label htmlFor="register-confirmPassword">Confirmar Senha</Label>
+                      <div className="relative">
+                        <Input
+                          id="register-confirmPassword"
+                          type={showConfirmPassword ? "text" : "password"}
+                          placeholder="Confirme sua senha"
+                          value={registerForm.confirmPassword}
+                          onChange={(e) => setRegisterForm({ ...registerForm, confirmPassword: e.target.value })}
+                          className={registerErrors.confirmPassword ? "border-destructive" : ""}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        >
+                          {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </Button>
+                      </div>
                       {registerErrors.confirmPassword && (
                         <p className="text-sm text-destructive">{registerErrors.confirmPassword}</p>
                       )}
@@ -307,10 +357,10 @@ export default function AuthPage() {
                       {registerMutation.isPending ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Creating account...
+                          Criando conta...
                         </>
                       ) : (
-                        "Create Account"
+                        "Criar Conta"
                       )}
                     </Button>
                   </form>
@@ -326,11 +376,11 @@ export default function AuthPage() {
         <div className="max-w-md text-center space-y-8">
           <div className="space-y-4">
             <h1 className="text-4xl font-space font-bold text-foreground">
-              Streamline Your
-              <span className="text-gradient block">Marketing Operations</span>
+              Centralize Suas
+              <span className="text-gradient block">Operações de Marketing</span>
             </h1>
             <p className="text-lg text-muted-foreground">
-              Centralize your CRM, tasks, finance, and automation in one powerful platform designed for marketing agencies.
+              Gerencie CRM, tarefas, finanças e automação em uma única plataforma poderosa para agências de marketing.
             </p>
           </div>
           
@@ -338,22 +388,22 @@ export default function AuthPage() {
             <div className="bg-card/50 backdrop-blur rounded-xl p-4 border border-border/50">
               <Users className="w-8 h-8 text-primary mb-2" />
               <h3 className="font-space font-semibold text-foreground">CRM</h3>
-              <p className="text-sm text-muted-foreground">Manage clients & relationships</p>
+              <p className="text-sm text-muted-foreground">Gerencie clientes e relacionamentos</p>
             </div>
             <div className="bg-card/50 backdrop-blur rounded-xl p-4 border border-border/50">
               <TrendingUp className="w-8 h-8 text-primary mb-2" />
               <h3 className="font-space font-semibold text-foreground">Analytics</h3>
-              <p className="text-sm text-muted-foreground">Track performance & ROI</p>
+              <p className="text-sm text-muted-foreground">Acompanhe performance e ROI</p>
             </div>
             <div className="bg-card/50 backdrop-blur rounded-xl p-4 border border-border/50">
               <BarChart3 className="w-8 h-8 text-primary mb-2" />
-              <h3 className="font-space font-semibold text-foreground">Finance</h3>
-              <p className="text-sm text-muted-foreground">Invoice & payment tracking</p>
+              <h3 className="font-space font-semibold text-foreground">Financeiro</h3>
+              <p className="text-sm text-muted-foreground">Controle de faturas e pagamentos</p>
             </div>
             <div className="bg-card/50 backdrop-blur rounded-xl p-4 border border-border/50">
               <Grid className="w-8 h-8 text-primary mb-2" />
-              <h3 className="font-space font-semibold text-foreground">Automation</h3>
-              <p className="text-sm text-muted-foreground">Streamline workflows</p>
+              <h3 className="font-space font-semibold text-foreground">Automação</h3>
+              <p className="text-sm text-muted-foreground">Otimize seus fluxos de trabalho</p>
             </div>
           </div>
         </div>

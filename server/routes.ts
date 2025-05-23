@@ -9,6 +9,7 @@ import {
   insertInvoiceSchema, insertPaymentSchema, insertContentSchema,
   insertOnboardingFlowSchema, insertOffboardingFlowSchema, insertFeedbackSchema
 } from "@shared/schema";
+import clientsRouter from './routes/clients';
 
 export function registerRoutes(app: Express): Server {
   // Setup authentication routes
@@ -21,6 +22,9 @@ export function registerRoutes(app: Express): Server {
     }
     next();
   };
+
+  // Registrar rotas de clientes
+  app.use('/api', clientsRouter);
 
   // Dashboard Analytics
   app.get("/api/dashboard/stats", requireAuth, async (req, res) => {
@@ -51,77 +55,6 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error("Error fetching revenue trend:", error);
       res.status(500).json({ message: "Failed to fetch revenue trend" });
-    }
-  });
-
-  // Clients CRUD
-  app.get("/api/clients", requireAuth, async (req, res) => {
-    try {
-      const clients = await storage.getAllClients();
-      res.json(clients);
-    } catch (error) {
-      console.error("Error fetching clients:", error);
-      res.status(500).json({ message: "Failed to fetch clients" });
-    }
-  });
-
-  app.get("/api/clients/:id", requireAuth, async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const client = await storage.getClient(id);
-      if (!client) {
-        return res.status(404).json({ message: "Client not found" });
-      }
-      res.json(client);
-    } catch (error) {
-      console.error("Error fetching client:", error);
-      res.status(500).json({ message: "Failed to fetch client" });
-    }
-  });
-
-  app.post("/api/clients", requireAuth, async (req, res) => {
-    try {
-      const clientData = insertClientSchema.parse(req.body);
-      const client = await storage.createClient(clientData);
-      res.status(201).json(client);
-    } catch (error) {
-      console.error("Error creating client:", error);
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid client data", errors: error.errors });
-      }
-      res.status(500).json({ message: "Failed to create client" });
-    }
-  });
-
-  app.put("/api/clients/:id", requireAuth, async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const clientData = insertClientSchema.partial().parse(req.body);
-      const client = await storage.updateClient(id, clientData);
-      if (!client) {
-        return res.status(404).json({ message: "Client not found" });
-      }
-      res.json(client);
-    } catch (error) {
-      console.error("Error updating client:", error);
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid client data", errors: error.errors });
-      }
-      res.status(500).json({ message: "Failed to update client" });
-    }
-  });
-
-  app.delete("/api/clients/:id", requireAuth, async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const success = await storage.deleteClient(id);
-      if (!success) {
-        return res.status(404).json({ message: "Client not found" });
-      }
-      res.status(204).send();
-    } catch (error) {
-      console.error("Error deleting client:", error);
-      res.status(500).json({ message: "Failed to delete client" });
     }
   });
 
@@ -198,7 +131,8 @@ export function registerRoutes(app: Express): Server {
     try {
       const taskData = insertTaskSchema.parse({
         ...req.body,
-        creatorId: req.user.id
+        creatorId: req.user.id,
+        requestDate: new Date()
       });
       const task = await storage.createTask(taskData);
       res.status(201).json(task);

@@ -83,6 +83,7 @@ export const tasks = pgTable("tasks", {
   actualHours: integer("actual_hours"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  requestDate: timestamp("request_date").defaultNow().notNull(),
 });
 
 // Invoices table
@@ -391,6 +392,7 @@ export const insertTaskSchema = createInsertSchema(tasks).omit({
   createdAt: true,
   updatedAt: true,
   completedAt: true,
+  requestDate: true,
 });
 
 export const insertInvoiceSchema = createInsertSchema(invoices).omit({

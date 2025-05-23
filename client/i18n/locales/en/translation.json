@@ -1,0 +1,51 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome, {{name}}",
+    "subtitle": "Here are the main insights and shortcuts for your business"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "continue": "Continue",
+    "next": "Next",
+    "previous": "Previous"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot your password?",
+    "rememberMe": "Remember me",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "invalidCredentials": "Invalid credentials"
+  },
+  "navigation": {
+    "home": "Home",
+    "crm": "Clients",
+    "tasks": "Tasks",
+    "finance": "Finance",
+    "content": "Content",
+    "automation": "Automation",
+    "onboarding": "Onboarding",
+    "offboarding": "Offboarding",
+    "settings": "Settings"
+  },
+  "notifications": {
+    "success": "Operation completed successfully",
+    "error": "Something went wrong, please try again",
+    "loading": "Loading data..."
+  },
+  "forms": {
+    "required": "Required field",
+    "invalidEmail": "Invalid email",
+    "minLength": "Minimum of {{count}} characters"
+  }
+}

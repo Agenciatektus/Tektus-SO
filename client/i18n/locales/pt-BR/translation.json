@@ -1,0 +1,76 @@
+{
+  "dashboard": {
+    "title": "Painel de Controle",
+    "welcome": "Bem-vindo(a), {{name}}",
+    "subtitle": "Aqui estão os principais indicadores e atalhos do seu negócio",
+    "quickStats": {
+      "title": "Estatísticas Rápidas",
+      "totalClients": "Total de Clientes",
+      "activeProjects": "Projetos Ativos",
+      "pendingTasks": "Tarefas Pendentes",
+      "monthlyRevenue": "Receita Mensal"
+    },
+    "recentActivity": {
+      "title": "Atividades Recentes",
+      "noActivities": "Nenhuma atividade recente",
+      "viewAll": "Ver todas"
+    },
+    "performance": {
+      "title": "Desempenho",
+      "nps": "NPS",
+      "satisfaction": "Satisfação",
+      "retention": "Retenção",
+      "growth": "Crescimento"
+    },
+    "upcoming": {
+      "title": "Próximos Eventos",
+      "meetings": "Reuniões",
+      "deadlines": "Prazos",
+      "noEvents": "Nenhum evento próximo"
+    }
+  },
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "close": "Fechar",
+    "confirm": "Confirmar",
+    "back": "Voltar",
+    "continue": "Continuar",
+    "next": "Próximo",
+    "previous": "Anterior"
+  },
+  "auth": {
+    "login": "Entrar",
+    "logout": "Sair",
+    "email": "E-mail",
+    "password": "Senha",
+    "forgotPassword": "Esqueceu a senha?",
+    "rememberMe": "Lembrar de mim",
+    "signIn": "Fazer login",
+    "signUp": "Criar conta",
+    "invalidCredentials": "Credenciais inválidas"
+  },
+  "navigation": {
+    "home": "Início",
+    "crm": "Clientes",
+    "tasks": "Tarefas",
+    "finance": "Financeiro",
+    "content": "Conteúdo",
+    "automation": "Automação",
+    "onboarding": "Onboarding",
+    "offboarding": "Offboarding",
+    "settings": "Configurações"
+  },
+  "notifications": {
+    "success": "Operação realizada com sucesso",
+    "error": "Algo deu errado, tente novamente",
+    "loading": "Carregando dados..."
+  },
+  "forms": {
+    "required": "Campo obrigatório",
+    "invalidEmail": "E-mail inválido",
+    "minLength": "Mínimo de {{count}} caracteres"
+  }
+}
