@@ -10,9 +10,12 @@
 
 ---
 
-## 📸 Demonstração
+## 🚧 Em desenvolvimento
 
-> *(Adicione prints do dashboard e fluxos principais aqui)*
+Este projeto está em fase ativa de desenvolvimento. Funcionalidades, estrutura e documentação podem mudar com frequência.  
+Contribuições são bem-vindas, mas recomendamos acompanhar os commits e issues para evitar conflitos com alterações recentes.
+
+Versão atual: `v0.1-alpha`
 
 ---
 
